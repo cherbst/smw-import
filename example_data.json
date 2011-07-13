@@ -22,7 +22,7 @@
 			"house" : "big house",
 			"room" : "203",
 			"age" : "18",
-			"banner" : { "url" : "http://87.238.194.42/cmsbilder/Kollektiv-Turmstrasse.jpg",
+			"banner" : { "url" : "http://turmstrasse.urban-heroes.de/header.png",
 				     "title" : "Turmstrasse" }
 		},
 		{
@@ -63,11 +63,11 @@ gleichberechtigt mit Klassik (z.B. Beethoven) behandelt.
 			"house" : "big house",
 			"room" : "203",
 			"age" : "18",
-			"image_big" : { "url" : "http://87.238.194.42/cmsbilder/matthew_herbert.jpg",
+			"image_big" : { "url" : "http://www.nndb.com/people/820/000114478/matthew-herbert.jpg",
 				        "title" : "Matthew Herbert" },
-			"sponsor" : [ { "url" : "http://87.238.194.42/cmsbilder/sponsor_stadtwerke.gif",
-			        	"title" : "Stadtwerke Potsdam" },
-			  	      { "url" : "http://87.238.194.42/cmsbilder/sponsor_page.jpg",
+			"sponsor" : [ { "url" : "http://occhealthnews.net/OEM-L_supporter_2009.gif",
+			        	"title" : "Sponsor" },
+			  	      { "url" : "http://www.page-online.de//media/Medienpartner/box_size_gutenbergblog_240x60_sw.gif",
 			        	"title" : "Page" }
 				    ]
 		},
