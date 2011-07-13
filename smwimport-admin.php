@@ -27,17 +27,25 @@ License: GPL2
 require_once('smwimport.php');
 // Hook for adding admin menus
 add_action('admin_menu', 'smwimport_add_pages');
-register_activation_hook( __FILE__, 'smwimport_activate_cron' );
-register_deactivation_hook(__FILE__, 'smwimport_deactivate_cron');
+register_activation_hook( __FILE__, 'smwimport_on_activation' );
+register_deactivation_hook(__FILE__, 'smwimport_on_deactivation');
 add_action('smwimport_import_all_event', 'smwimport_import_all' );
 
 
-function smwimport_deactivate_cron() {
+function smwimport_on_deactivation() {
 	wp_clear_scheduled_hook('smwimport_import_all_event');
 }
 
-function smwimport_activate_cron() {
+function smwimport_on_activation() {
 	wp_schedule_event(time(), 'hourly','smwimport_import_all_event');
+
+	// check existing data sources
+	$datasources = get_option('smwimport_data_sources',array());
+	if ( empty($datasources) ){
+		// add default data source
+		$datasources[] = dirname(__FILE__) . '/example_data.json';
+		update_option( 'smwimport_data_sources', $datasources );
+	}
 }
 
 function smwimport_import_all(){
