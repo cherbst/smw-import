@@ -136,6 +136,7 @@ function smwimport_settings_page() {
     $login_url = get_option('smwimport_login_url');
     $username = get_option('smwimport_username');
     $password = get_option('smwimport_password');
+    $import_tests = (boolean)get_option('smwimport_import_tests');
 
     // See if the user has posted us some information
     // If they did, this hidden field will be set to 'Y'
@@ -150,6 +151,7 @@ function smwimport_settings_page() {
 		$login_url = $_POST['smwimport_login_url'];
 		$username = $_POST['smwimport_username'];
 		$password = $_POST['smwimport_password'];
+		$import_tests = (boolean)$_POST['smwimport_import_tests'];
 		// Save the posted value in the database
 		update_option( 'smwimport_data_sources', $datasources_opt );
 
@@ -157,6 +159,7 @@ function smwimport_settings_page() {
 		update_option( 'smwimport_login_url', $login_url );
 		update_option( 'smwimport_username', $username );
 		update_option( 'smwimport_password', $password );
+		update_option( 'smwimport_import_tests', $import_tests );
 		$message = __('settings saved.', 'menu-smwimport' );
 	}else if ( $_POST['NewSource'] ){
 		// add new data source
@@ -212,6 +215,11 @@ function smwimport_settings_page() {
 <p><?php _e("SMW password:", 'menu-smwimport' ); ?> 
 <input type="password" name="smwimport_password" value="<?php echo $password; ?>" size="40">
 </p>
+
+<p><?php _e("Import test data from smwimport-test.php:", 'menu-smwimport' ); ?> 
+<input type="checkbox" name="smwimport_import_tests" <?php if ($import_tests) echo 'checked="checked"'; ?>>
+</p>
+
 <hr />
 
 <p class="submit">

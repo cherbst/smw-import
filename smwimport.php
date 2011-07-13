@@ -27,8 +27,6 @@ require_once(dirname(__FILE__) . '/favicon.inc.php');
 
 class smwimport
 {
-  // import test sources
-  static $import_tests = true;
   // time measure variables
   static $start_time;
   static $fetch_time;
@@ -618,7 +616,8 @@ class smwimport
 	self::$global_imported_posts = self::get_smwimport_posts();
 
 	$sources = array();
-	if ( self::$import_tests ){
+    	$import_tests = (boolean)get_option('smwimport_import_tests');
+	if ( $import_tests ){
 		require_once(dirname(__FILE__) . '/smwimport-test.php');
 		$sources = smwimport_test::get_sources();
 	}
