@@ -63,7 +63,9 @@ class smwimport
 			foreach( $cats as $cat ){
 				$subcats[] = (int)$cat->term_id;
 			}
+			$subcats[] = $parentcat;
 		}
+		$subcats[] = $topcat->term_id;
 	}
 	return $subcats;
   }
