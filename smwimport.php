@@ -216,10 +216,13 @@ class smwimport
 	$globalattachment = null;
 	$favicon = null;
 
-	// get top level category
-	$cat = get_category_by_slug($mapping['category']);
-	if ( !$cat )
-		return new WP_Error('category_failed', __("Could not find top level category:").$mapping['category']);
+	// create top level category
+	$cat = self::create_category(array(
+			'cat_name' => $mapping['category'],
+			'category_nicename' => $mapping['category']));
+
+	if ( is_wp_error($cat) )
+		return $cat;
 
 	foreach( $data as $key => $value ){
 		if ( is_array($attribute_mapping[$key]) )
@@ -233,7 +236,7 @@ class smwimport
 				case 'post_content':
 				case 'post_date':
 					if ( $key_map == 'post_date' )
-						$value = self::get_unique_post_date($value,$cat->term_id);
+						$value = self::get_unique_post_date($value,$cat);
 					$postarr[$key_map] = $value;
 					break;
 				case 'globalattachment':
@@ -271,7 +274,7 @@ class smwimport
 		$postarr['post_title'] = $prim_key;
 
 	// create the post
-	$ID = self::import_post($prim_key,$postarr,$cat->term_id);
+	$ID = self::import_post($prim_key,$postarr,$cat);
 	if ( is_wp_error($ID) ){
 		error_log('Could not import:'.$prim_key);
 		return $ID;
@@ -351,7 +354,7 @@ class smwimport
 
 	// create categories
 	if ( $categories != null ){
-		$ret = self::import_post_categories($ID,$categories,$cat->term_id);
+		$ret = self::import_post_categories($ID,$categories,$cat);
 		if ( is_wp_error($ret) ) $g_ret = $ret;
 	}
 	return $g_ret;
@@ -410,10 +413,13 @@ class smwimport
 	$prim_key = $data[$mapping['primary_key']];
 	$attribute_mapping = $mapping['attributes'];
 
-	// get top level category
-	$cat = get_category_by_slug($mapping['category']);
-	if ( !$cat )
-		return new WP_Error('category_failed', __("Could not find top level category:").$mapping['category']);
+	// create top level category
+	$cat = self::create_category(array(
+			'cat_name' => $mapping['category'],
+			'category_nicename' => $mapping['category']));
+
+	if ( is_wp_error($cat) )
+		return $cat;
 
 	// init some post properties
 	$postarr = array(
@@ -445,7 +451,7 @@ class smwimport
 	if (!($dh = opendir($gallery_folder)))
 		return new WP_Error('open_error', __("Could not open the given gallery folder:").$gallery_folder);
 
-	$ID = self::import_post($prim_key,&$postarr,$cat->term_id);
+	$ID = self::import_post($prim_key,&$postarr,$cat);
 	if ( is_wp_error($ID) ) return $ID;
 
 	// set gallery format
