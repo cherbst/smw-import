@@ -129,11 +129,9 @@ function smwimport_settings_page() {
     // variables for the field and option names 
     $hidden_field_name = 'smwimport_submit_hidden';
 
-    $num_sources = (int)get_option('smwimport_num_data_sources');
     $attachment_url = get_option('smwimport_attachment_url');
     // Read in existing option value from database
-    for ( $source = 0; $source < $num_sources; $source++)
-	$datasources_opt[$source] = get_option('smwimport_data_source'.$source);
+    $datasources_opt = get_option('smwimport_data_sources',array());
 
     $login_url = get_option('smwimport_login_url');
     $username = get_option('smwimport_username');
@@ -153,8 +151,7 @@ function smwimport_settings_page() {
 		$username = $_POST['smwimport_username'];
 		$password = $_POST['smwimport_password'];
 		// Save the posted value in the database
-		foreach( $datasources_opt as $key => $opt )
-			update_option( 'smwimport_data_source'.$key, $opt );
+		update_option( 'smwimport_data_sources', $datasources_opt );
 
 		update_option( 'smwimport_attachment_url', $attachment_url );
 		update_option( 'smwimport_login_url', $login_url );
@@ -163,16 +160,13 @@ function smwimport_settings_page() {
 		$message = __('settings saved.', 'menu-smwimport' );
 	}else if ( $_POST['NewSource'] ){
 		// add new data source
-		$num_sources += 1;
 		$datasources_opt[] = '';
-		update_option( 'smwimport_num_data_sources', $num_sources );	
+		update_option('smwimport_data_sources',$datasources_opt);
 		$message = __('New data source added.', 'menu-smwimport' );
 	}else if ( $_POST['RemoveSource'] ){
 		// remove last data source
-		$num_sources -= 1;
-		unset($datasources_opt[$num_sources]);
-		delete_option('smwimport_data_source'.$num_sources);
-		update_option( 'smwimport_num_data_sources', $num_sources );
+		unset($datasources_opt[count($datasources_opt)-1]);
+		update_option('smwimport_data_sources',$datasources_opt);
 		$message = __('Data source removed.', 'menu-smwimport' );
 	}
         // Put an settings updated message on the screen
@@ -223,7 +217,7 @@ function smwimport_settings_page() {
 <p class="submit">
 <input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
 <input type="submit" name="NewSource" class="button-secondary" value="<?php esc_attr_e('Add new data source') ?>" />
-<?php if ( $num_sources > 0 ){ ?>
+<?php if ( count($datasources_opt) > 0 ){ ?>
 <input type="submit" name="RemoveSource" class="button-secondary" value="<?php esc_attr_e('Remove last data source') ?>" />
 <?php } ?>
 </p>

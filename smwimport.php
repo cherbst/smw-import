@@ -74,17 +74,14 @@ class smwimport
       returns: array( 'url' => function ) or array( WP_Error )
   */
   private static function get_data_sources(){
-	$num_sources = (int)get_option( 'smwimport_num_data_sources' );
-	if ($num_sources == 0) 
-		return array(new WP_Error('no_data_sources', __("No data sources defined.")));
-
-	$data_sources = array();
-	for( $i = 0; $i< $num_sources; $i++ )
-		$data_sources[get_option( 'smwimport_data_source'.$i )] = array('self','get_data_from_source');
-
+	$data_sources = get_option( 'smwimport_data_sources', array() );
 	if (empty($data_sources)) 
 		return array(new WP_Error('no_data_sources', __("No data sources defined.")));
-	return $data_sources;
+
+	foreach( $data_sources as $source )
+		$sources[$source] = array('self','get_data_from_source');
+
+	return $sources;
   }
 
   /*  returns array of SMW items from datasource or a WP_Error
