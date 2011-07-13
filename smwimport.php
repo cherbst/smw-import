@@ -382,16 +382,24 @@ class smwimport
 		update_post_meta($post_id,'favicon',$favicon);
   }
 
+  /* creates a page with the given name, or returns the id of
+     the page if it exists */
+  private static function create_page($page){
+	$postarr['post_type']  = 'page';
+	$postarr['post_title']  = $page;
+	return self::import_post('page_'.$page,&$postarr);
+  }
+
   /*  imports $data into a wordpress attachment according to $mapping
   */
   private static function import_attachment_type($mapping,$data){
 	$prim_key = $data[$mapping['primary_key']];
 	$attribute_mapping = $mapping['attributes'];
 
-	$page = get_page_by_path( $mapping['page'] ); 
+	$page = self::create_page( $mapping['page'] ); 
 	
-	if ( $page == null )
-		return new WP_Error('no_page', __("could not find attachment page:").$mapping['page']);
+	if ( is_wp_error($page) )
+		return $page;
 
 	foreach( $data as $key => $value ){
 		switch($attribute_mapping[$key]){
@@ -403,7 +411,7 @@ class smwimport
 		}
 	}
 
-	return self::import_attachment_for_post($prim_key,$attachment,$page->ID);
+	return self::import_attachment_for_post($prim_key,$attachment,$page);
   }
 
   /*  creates a wordpress post together with attachments
@@ -776,14 +784,12 @@ class smwimport
 			      'value' => 'smwimport'
 			)
 		),
-		'numberposts' => -1
+		'numberposts' => -1,
+		'post_type'  => 'any',
+		'post_status' => 'any'
 	);
 	$posts = get_posts($args);
-	$args['post_type'] = 'attachment';
-	$args['post_status'] = null;
-	$attachments = get_posts($args);
-	$all_posts = array_merge($posts,$attachments);
-	foreach ( $all_posts as $post )
+	foreach ( $posts as $post )
 		$ret[$post->ID] = $post;
 	return $ret;
   }
@@ -791,16 +797,11 @@ class smwimport
   /*  return a post with the specified $prim_key inside $category_id
       $category_id can be null
   */
-  private static function get_post($prim_key, $category_id = null){
-	if ( $category_id === null ){
-		$type = 'attachment';
-	}else{
-		$type = 'post';
-	}
-
+  private static function get_post($prim_key, $category_id = null ){
 	$args = array(
 		'category' => $category_id,
-		'post_type' => $type,
+		'post_type' => 'any',
+		'post_status' => 'any',
 		'numberposts' => 1,
 		'meta_key' => '_prim_key',
 		'meta_value' => $prim_key
@@ -812,15 +813,17 @@ class smwimport
   /*  import a post
       $postarr must be an array expected by wp_insert_post
   */
-  private static function import_post($prim_key,&$postarr, $category_id ) {
-	$postarr['post_category'] = array( $category_id );
+  private static function import_post($prim_key,&$postarr, $category_id = null ) {
+	if ( $category_id != null )
+		$postarr['post_category'] = array( $category_id );
 	$postarr['post_status'] = 'publish';
 	$post = self::get_post($prim_key,$category_id);
 	if ( $post != null ){
 		$ID = $post->ID;
 		$postarr['ID'] = $ID;
 		$post = get_post($ID,'ARRAY_A');
-		$post['post_category'] = $postarr['post_category'];
+		if ( $category_id != null )
+			$post['post_category'] = $postarr['post_category'];
 		$diff = array_diff_assoc($postarr,$post);
 		// the post did not change, so just return the ID
 		if ( empty($diff) ){
