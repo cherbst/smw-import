@@ -70,6 +70,12 @@ class smwaccess
 	}
 	$result = curl_exec ($ch);
 	curl_close($ch);
+
+	if ( $result === false ){
+		// maybe $url is a local file
+		 return file_get_contents($url);
+	}
+
 	return $result;
    }
 }
