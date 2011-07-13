@@ -1,3 +1,16 @@
+=== SMW Import ===
+Contributors: chherbst
+Donate link:
+Tags: import, smw, json, synchronize
+Requires at least: 3.0.0
+Tested up to: 3.2
+Stable tag: 0.1
+
+Plugin to synchronize a wordpress blog with a JSON source, e.g. a 
+Semantic Media Wiki.
+
+== Description ==
+
 This plugin synchronizes information of an Semantic Media Wiki 
 with a wordpress blog. 
 
@@ -12,4 +25,11 @@ time on successive imports.
 The supported import format is JSON. Thus it could also be used
 for data sources other than Semantic Media Wikis, as long as they export their
 data in JSON format.
+
+
+== Installation ==
+
+1. Upload all files to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+
 
