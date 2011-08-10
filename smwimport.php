@@ -65,7 +65,6 @@ class smwimport
 			}
 			$subcats[] = $parentcat;
 		}
-		$subcats[] = $topcat->term_id;
 	}
 	return $subcats;
   }

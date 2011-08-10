@@ -32,7 +32,7 @@
      Supported wordpress types:
      "post" : imports element into an wordpress post
 	required mappings:
-	   "category"    : slug of top level category to import into ( must exist )
+	   "category"    : slug of top level category to import into
 	   "primary_key" : attribute which holds the primary key for each item
         supported attribute mappings:
 	   A single value or an array of the following types are supported:
@@ -87,7 +87,7 @@
      "gallery" : creates a post and attachments for this post
 	required mappings:
 	   "primary_key" : attribute which holds the primary key for each item
-	   "category"    : slug of top level category to import into ( must exist )
+	   "category"    : slug of top level category to import into
         supported attribute mappings:
 	   "name':  attribute value will become the title of the gallery 
 	   "description":   attribute value will become the description of the gallery
