@@ -45,6 +45,7 @@ class smwimport
   */
   private static function get_imported_sub_categories($mappings){
 	$subcats = array();
+	$parentcats = array();
 	foreach($mappings as $mapping){
 		if ( $mapping['type'] != 'post' ) continue;
 		if ( !isset($mapping['category']) ) continue;
@@ -63,10 +64,10 @@ class smwimport
 			foreach( $cats as $cat ){
 				$subcats[] = (int)$cat->term_id;
 			}
-			$subcats[] = $parentcat;
+			$parentcats[] = $parentcat;
 		}
 	}
-	return $subcats;
+	return array_merge($subcats,$parentcats);
   }
 
   /*  returns array of all defined data sources together with function to retrieve the data
@@ -112,6 +113,12 @@ class smwimport
 	return $data['items'];
   }
 
+  private static function fix_wordpress_category_children(){
+	//XXX: needed because of a bug in wordpress term cache
+	wp_cache_flush();
+	delete_option('category_children');
+  }
+
   /* returns the id of the wordpess category if it exists, otherwise -1
      $slug: slug of the category
      $parent: $parent of the category
@@ -123,10 +130,7 @@ class smwimport
 		if ( $cat )
 			$cat_id = $cat->term_id;
 	}else{
-		//XXX: again needed because of a bug in wordpress term cache
-		wp_cache_flush();
-		//XXX: same bug, needed for wp_cron support
-		delete_option('category_children');
+		self::fix_wordpress_category_children();
 		$cats = get_categories( "hide_empty=0&parent=".$parent );
 		$parentcat = get_category($parent);
 		foreach( $cats as $cat ){
@@ -167,8 +171,11 @@ class smwimport
 		//if ($child->category_count == 0){
 		$objects = get_objects_in_term($category,'category');
 		if ( empty($objects) ){
-			$cat = get_category($category);
-			wp_delete_category( $category );
+			// are there subcategories?
+			self::fix_wordpress_category_children();
+			$cats = get_categories( "hide_empty=0&parent=".$category );
+			if ( empty($cats) )
+				wp_delete_category( $category );
 		}
 	}
 	return true;
@@ -682,8 +689,7 @@ class smwimport
 		}
 	}
 	// XXX: this is needed due to a bug in wordpress category cache
-	wp_cache_flush();
-	delete_option('category_children');
+	self::fix_wordpress_category_children();
 	// XXX: needed to make permalinks work (not documented)
 	$wp_rewrite->flush_rules();
 
