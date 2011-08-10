@@ -594,27 +594,26 @@ class smwimport
 	}
   }
 
-  /* delete all posts in $posts and leftover empty subcategories */
+  /* delete all posts in $posts */
   private static function delete_posts($posts){
-	global $smw_mapping;
-
 	self::load_ec3();
 	foreach($posts as $post){
 		self::delete_post_dates($post->ID);
 		wp_delete_post($post->ID,true);
 	}
-	return self::delete_empty_subcategories($smw_mapping);
   }
 
   /* public function
      Deletes all imported data ( posts, attachments, links, categories )
   */
   public static function delete_all_imported(){
+	global $smw_mapping;
 	$links = self::get_smwimport_links();
 	self::delete_links($links);
 
 	$posts = self::get_smwimport_posts();
 	self::delete_posts($posts);
+	return self::delete_empty_subcategories($smw_mapping);
   }
 
   /* public function
@@ -696,6 +695,8 @@ class smwimport
 	else{
 		if (!empty(self::$global_imported_posts))
 			$ret = self::delete_posts(self::$global_imported_posts);
+		if ( is_wp_error($ret) ) $g_ret = $ret;
+		$ret = self::delete_empty_subcategories($smw_mapping);
 		if ( is_wp_error($ret) ) $g_ret = $ret;
 		if (!empty(self::$global_imported_links))
 			$ret = self::delete_links(self::$global_imported_links);
