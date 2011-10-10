@@ -428,6 +428,7 @@ class smwimport
   private static function import_gallery_type($mapping,$data){
 	$prim_key = $data[$mapping['primary_key']];
 	$attribute_mapping = $mapping['attributes'];
+	$base_dir = $mapping['base_directory'];
 
 	// create top level category
 	$cat = self::create_category(array(
@@ -446,21 +447,29 @@ class smwimport
 
 	foreach( $data as $key => $value ){
 		if ( !isset($attribute_mapping[$key]) ) continue;
-		switch($attribute_mapping[$key]){
-			case 'description':
-				$postarr['post_content'] = $value;
-				break;
-			case 'name':
-				$postarr['post_title'] = $value;
-				break;
-			case 'gallery_folder':
-				$gallery_folder = $value;
-				break;
-			case 'featured_image':
-				$featured_image = $value;
-				break;
+		if ( is_array($attribute_mapping[$key]) )
+			$key_mapping = $attribute_mapping[$key];
+		else
+			$key_mapping = array($attribute_mapping[$key]);
+		foreach( $key_mapping as $key_map ){
+			switch($key_map){
+				case 'description':
+					$postarr['post_content'] = $value;
+					break;
+				case 'name':
+					$postarr['post_title'] = $value;
+					break;
+				case 'gallery_folder':
+					$gallery_folder = $value;
+					break;
+				case 'featured_image':
+					$featured_image = $value;
+					break;
+			}
 		}
 	}
+
+	$gallery_folder = $base_dir . $gallery_folder;
 
 	if (!is_dir($gallery_folder))
 		return new WP_Error('no_directory', __("The given gallery folder is not a directory:").$gallery_folder);

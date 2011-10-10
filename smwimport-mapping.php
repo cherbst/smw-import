@@ -88,7 +88,11 @@
 	required mappings:
 	   "primary_key" : attribute which holds the primary key for each item
 	   "category"    : slug of top level category to import into
+	optional mappings:
+	   "base_directory" : the name of the base directory for all galleries,
+			      will be prepended to the gallery folder
         supported attribute mappings:
+	   A single value or an array of the following types are supported:
 	   "name':  attribute value will become the title of the gallery 
 	   "description":   attribute value will become the description of the gallery
 	   "featured_image":   attribute value holds the filename of the featured image 
@@ -177,6 +181,7 @@
 		'type' => 'gallery',
 		'primary_key' => 'name',
 		'category' => 'images',
+		'base_directory' => '/www/galleries',
 		'attributes' => array(
 			'name' => 'name',
 			'description' => 'description',
