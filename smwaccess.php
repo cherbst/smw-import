@@ -60,6 +60,7 @@ class smwaccess
 	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt ($ch, CURLOPT_COOKIEJAR, self::smwcookie);
 	curl_setopt ($ch, CURLOPT_COOKIEFILE, self::smwcookie);
+	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false );
 	if ( $postdata !== null ){
 		curl_setopt ($ch, CURLOPT_POSTFIELDS, $postdata);
 		curl_setopt ($ch, CURLOPT_POST, 1);
