@@ -216,6 +216,20 @@ class smwimport
 	$categories = null;
 	$g_ret = true;
 
+	// get all mapped attachment keys
+	$attachment_mappings = array();
+	foreach ( $attribute_mapping as $key => $value ){
+		if ( is_array($value) )
+			$key_mapping = $value;
+		else
+			$key_mapping = array($value);
+
+		foreach( $key_mapping as $key_map ){
+			if ( $key_map == 'attachment' )
+				$attachment_mappings[] = $key;
+		}
+	}
+
 	// init some post properties
 	$postarr = array( 
 		'post_title' => '',
@@ -250,6 +264,8 @@ class smwimport
 				case 'globalattachment':
 					$globalattachment = $key;
 				case 'attachment':
+					// remember this attachment key was found
+					unset( $attachment_mappings[array_search($key,$attachment_mappings)] );
 					$attachments[] = $key;
 					break;
 				case 'calendar_start':
@@ -340,9 +356,14 @@ class smwimport
 			$val[] = $ids;
 			update_option($globalattachment,$val);
 		}
-		// store attachment ID as post meta
+
+		// store attachment IDs as post meta
 		update_post_meta($ID,$attachment,$ids);
 	}
+
+	// remove post meta from unused attachment mappings
+	foreach ( $attachment_mappings as $meta )
+		delete_post_meta($ID, $meta );
 
 	// import dates
 	if ( is_array($calendar) ){
