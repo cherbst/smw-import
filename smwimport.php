@@ -47,8 +47,9 @@ class smwimport
 	$subcats = array();
 	$parentcats = array();
 	foreach($mappings as $mapping){
-		if ( $mapping['type'] != 'post' ) continue;
-		if ( !isset($mapping['category']) ) continue;
+		if ( !isset($mapping['type']) ||
+		     !isset($mapping['category']) ||
+		     $mapping['type'] != 'post' ) continue;
 		// top level category
 		$topcat = get_category_by_slug($mapping['category']);
 		if ( !$topcat ) continue;
