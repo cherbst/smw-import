@@ -417,7 +417,7 @@ class smwimport
   private static function create_page($page){
 	$postarr['post_type']  = 'page';
 	$postarr['post_title']  = $page;
-	return self::import_post('page_'.$page,&$postarr);
+	return self::import_post('page_'.$page,$postarr);
   }
 
   /*  imports $data into a wordpress attachment according to $mapping
@@ -498,7 +498,7 @@ class smwimport
 	if (!($dh = opendir($gallery_folder)))
 		return new WP_Error('open_error', __("Could not open the given gallery folder:").$gallery_folder);
 
-	$ID = self::import_post($prim_key,&$postarr,$cat);
+	$ID = self::import_post($prim_key,$postarr,$cat);
 	if ( is_wp_error($ID) ) return $ID;
 
 	// set gallery format
